@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion : '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Local Lambda Sample with Python 3.6
+
+Resources:
+
+  Servers:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: servers.handler
+      Runtime: python3.6
+      Timeout: 30
+      Events:
+        ListServers:
+          Type: Api
+          Properties:
+            Path: /servers
+            Method: get
+        GetServer:
+          Type: Api
+          Properties:
+            Path: /server/{serverId}
+            Method: get
+        DeleteServer:
+          Type: Api
+          Properties:
+            Path: /server/{serverId}
+            Method: delete
+        AddServer:
+          Type: Api
+          Properties:
+            Path: /server
+            Method: post
+        UpdateServer:
+          Type: Api
+          Properties:
+            Path: /server
+            Method: put
