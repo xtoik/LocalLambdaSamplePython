@@ -1,9 +1,19 @@
+"""
+Module providing access to the Server Monitor data
+"""
 import boto3
 from botocore.exceptions import ClientError
 import time
 
 class ServerMonitorContext:
+    """
+    Context used to access the server monitor data in the DB
+    """
+
     def __init__(self):
+        """
+        Initializes a new instance of the L{ServerMonitorContext} class 
+        """
         self.table_name = 'servers'
         self.dynamodb_client = boto3.client('dynamodb', region_name='eu-central-1', endpoint_url="http://192.168.2.159:8000")
         try:
@@ -16,6 +26,9 @@ class ServerMonitorContext:
                 raise
     
     def get_server(self, serverId):
+        """
+        Gets a server by its serverId
+        """
         server = self.dynamodb_client.get_item(
             TableName=self.table_name,
             Key={
@@ -32,6 +45,9 @@ class ServerMonitorContext:
         return ret
     
     def list_servers(self):
+        """
+        Gets a list of the servers in the DB
+        """
         servers = self.dynamodb_client.scan(
             TableName=self.table_name)
         unboxed_servers = []
@@ -40,6 +56,9 @@ class ServerMonitorContext:
         return unboxed_servers
 
     def delete_server(self, serverId):
+        """
+        Deletes a server from the DB
+        """
         response = self.dynamodb_client.delete_item(
             TableName=self.table_name,
             Key={
@@ -57,6 +76,9 @@ class ServerMonitorContext:
         return ret
 
     def add_server(self, serverData):
+        """
+        Adds a server to the DB
+        """
         server = self._box_record(serverData)
         ret = True
         try:
@@ -74,6 +96,9 @@ class ServerMonitorContext:
         return ret
 
     def update_server(self, serverData):
+        """
+        Updates the given server in the DB
+        """
         server = self._box_record(serverData)
         ret = True
         try:
@@ -90,7 +115,10 @@ class ServerMonitorContext:
                 
         return ret
 
-    def _box_record(self, record):        
+    def _box_record(self, record):
+        """
+        Encapsulates a record as DynamoDB is expecting it
+        """
         for key in record.keys():
             if isinstance(record[key], int) or isinstance(record[key], float):
                 record[key] = {'N': str(record[key])}
@@ -99,7 +127,10 @@ class ServerMonitorContext:
         print('Boxed record: ' + str(record))
         return record
 
-    def _unbox_record(self, record):        
+    def _unbox_record(self, record):
+        """
+        Extracts a record from the DynamoDB encapsulation
+        """
         for key in record.keys():
             if 'S' in record[key]:
                 record[key] = record[key]['S']
@@ -113,6 +144,9 @@ class ServerMonitorContext:
         return record
     
     def _initializeDb(self):
+        """
+        Initializes the DB creating the table and some test data
+        """
         print('Database not initialized. Initializing DB...')
         self.dynamodb_client.create_table(
             AttributeDefinitions = [

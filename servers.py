@@ -1,3 +1,6 @@
+"""
+Module implementing a lamdba that will expose a REST API to manage servers within Server Monitor
+"""
 from botocore.exceptions import ClientError
 import json
 import sys
@@ -5,6 +8,9 @@ import sys
 from dal.server_monitor_context import ServerMonitorContext
 
 def handler(event, context):
+    """
+    Handler for the HTTP requests received by the lambda
+    """
     try:
         dbContext = ServerMonitorContext()
 
@@ -37,6 +43,9 @@ def handler(event, context):
         raise
 
 def _get_server(dbContext, serverId):
+    '''
+    Provides the HTTP response for the get server API call
+    '''
     server = dbContext.get_server(serverId)
     print(server)
     ret = None
@@ -54,6 +63,9 @@ def _get_server(dbContext, serverId):
     return ret
 
 def _list_servers(dbContext):
+    '''
+    Provides the HTTP response for the list servers API call
+    '''
     servers = dbContext.list_servers()
     print(servers)
     return {
@@ -62,6 +74,9 @@ def _list_servers(dbContext):
     }
 
 def _delete_server(dbContext, serverId):
+    '''
+    Provides the HTTP response for the delete server API call
+    '''
     ret = None
     if dbContext.delete_server(serverId):
         ret = {
@@ -77,6 +92,9 @@ def _delete_server(dbContext, serverId):
     return ret
 
 def _add_server(dbContext, serverData):
+    '''
+    Provides the HTTP response for the add server API call
+    '''
     print(serverData)
     server = json.loads(serverData)
     ret = None
@@ -94,6 +112,9 @@ def _add_server(dbContext, serverData):
     return ret
 
 def _update_server(dbContext, serverData):
+    '''
+    Provides the HTTP response for the update server API call
+    '''
     print(serverData)
     server = json.loads(serverData)
     ret = None
