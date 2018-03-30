@@ -106,5 +106,49 @@ class TestServersApi(unittest.TestCase):
 
             self.assertEqual(409, response.status_code)
 
+    def test_update_existing_server(self):
+        """
+        Tests that the update_server method works as expected for an existing server
+        """
+        with ServersTestContext():
+            server_name = "VillaconejosSQLServer01"
+            payload = {
+                "server_id": server_name, 
+                "iisPresent": "true", 
+                "memory": 1073741824, 
+                "upToDate": "true"
+            }
+            response = requests.put('http://localhost:3000/server', json=payload)            
+            self.assertEqual(200, response.status_code)
+
+            # test that the server updated has been integrated in the database
+            time.sleep(2)
+            response = requests.get('http://localhost:3000/server/' + server_name)
+            self.assertEqual(200, response.status_code)
+            server = response.json()
+            self.assertEqual(payload['server_id'], server['server_id'])
+            self.assertEqual(payload['memory'], server['memory'])
+            self.assertEqual(payload['upToDate'], server['upToDate'])
+
+    def test_update_not_existing_server(self):
+        """
+        Tests that the update_server method works as expected for a not existing server
+        """
+        with ServersTestContext():
+            server_name = "test_update_not_existing_server"
+            payload = {
+                "server_id": server_name, 
+                "iisPresent": "false", 
+                "memory": 1073741824, 
+                "upToDate": "false"
+            }
+            response = requests.put('http://localhost:3000/server', json=payload)            
+            self.assertEqual(404, response.status_code)
+
+            # test that the server updated has not been integrated in the database
+            time.sleep(2)
+            response = requests.get('http://localhost:3000/server/' + server_name)
+            self.assertEqual(404, response.status_code)
+
 if __name__ == '__main__':
     unittest.main()
