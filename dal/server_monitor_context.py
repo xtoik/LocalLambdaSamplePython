@@ -198,6 +198,21 @@ class ServerMonitorContext:
                         'PutRequest': {
                             'Item': {
                                 'server_id': {
+                                    'S': 'VillaconejosSQLServer02'
+                                },
+                                'memory': {
+                                    'N': '8589934592'
+                                },
+                                'iisPresent': {
+                                    'S': 'false'
+                                }
+                            }
+                        }
+                    },
+                    {
+                        'PutRequest': {
+                            'Item': {
+                                'server_id': {
                                     'S': 'VillaconejosBOSServer01'
                                 },
                                 'memory': {
